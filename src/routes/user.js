@@ -23,20 +23,22 @@ router.post('/', async(req, res) => {
 });
 
 router.post('/signup', async(req, res) => {
-  // try {
-  const user = new User(req.body);
-  const newUser = await user.save();
-  const token = await newUser.generateAuthToken();
+  try {
+    const user = new User(req.body);
+    const newUser = await user.save();
+    const token = await newUser.generateAuthToken();
 
-  // sending welcome message
-  sendEmail.sendWelcomeEmail(req.body.email, req.body.name);
+    // sending welcome message
+    sendEmail.sendWelcomeEmail(req.body.email, req.body.name);
 
-  res
-    .status(201)
-    .send({user: newUser, token})
-  // } catch (error) {   res     .status(400)     .send(error); }
-}, (error, req, res, next) => {
-  res.send({error: error})
+    res
+      .status(201)
+      .send({user: newUser, token})
+  } catch (error) {
+    res
+      .status(400)
+      .send(error);
+  }
 });
 
 router.post('/logout', auth, async(req, res) => {
