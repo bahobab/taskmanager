@@ -87,11 +87,7 @@ router.post('/login', async(req, res) => {
 
     res
       .status(200)
-      .send({
-        // user: user.getPublicProfile(),
-        user,
-        token
-      });
+      .send({user, token});
   } catch (error) {
     res
       .status(400)
@@ -117,7 +113,7 @@ router.patch('/me', auth, async(req, res) => {
   const isValidOperation = updates.every(value => allowedUpdates.includes(value));
 
   if (!isValidOperation) 
-    return res.status(404).send({error: 'Invalid update!'});
+    return res.status(400).send({error: 'Invalid update!'});
   
   try {
     // const user = await User.findById(req.params.id);
@@ -177,7 +173,7 @@ const upload = multer({
 });
 
 router.post('/me/avatar', auth, upload.single('avatar'), async(req, res) => {
-  const buffer = await sharp(req.file)
+  const buffer = await sharp(req.file.buffer)
     .resize({width: 250, height: 250})
     .png()
     .toBuffer();
@@ -187,7 +183,6 @@ router.post('/me/avatar', auth, upload.single('avatar'), async(req, res) => {
   await req
     .user
     .save();
-
   res.send('Avatar uploaded')
 }, (error, req, res, next) => {
   res

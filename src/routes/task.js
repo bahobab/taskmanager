@@ -41,8 +41,9 @@ router.get('/', auth, async(req, res) => {
       : 1;
   }
   try {
-    // const tasks = await Task.find({owner: req.user._id}); if (!tasks)   return
+    // const tasks = await Task.find({ owner: req.user._id }); if (!tasks) return
     // res.status(404).send();
+
     await req
       .user
       .populate({
@@ -58,7 +59,7 @@ router.get('/', auth, async(req, res) => {
 
     res
       .status(200)
-      .send(tasks);
+      .send(req.user.tasks);
   } catch (error) {
     res
       .status(500)
@@ -114,17 +115,21 @@ router.patch('/:id', auth, async(req, res) => {
 });
 
 router.delete('/:id', auth, async(req, res) => {
-  // try {
-  const task = await Task.findOneAndDelete({_id: req.params.id, owner: req.user._id});
-  if (!task) 
-    return res.status(404).send();
-  
-  await Task.fid;
+  try {
+    const task = await Task.findOneAndDelete({_id: req.params.id, owner: req.user._id});
+    if (!task) 
+      return res.status(404).send();
+    
+    // await Task.fid;
 
-  res
-    .status(200)
-    .send(task);
-  // } catch (error) {   res     .status(500)     .send(error); }
+    res
+      .status(200)
+      .send(task);
+  } catch (error) {
+    res
+      .status(500)
+      .send(error);
+  }
 });
 
 module.exports = router;
